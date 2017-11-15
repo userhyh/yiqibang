@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.uc.yiqibang.mapper.CommentMapper" >
+  <resultMap id="BaseResultMap" type="cn.uc.yiqibang.bean.Comment" >
+    <!-- 获取所有评论 -->
+    <!-- <select id="selectAll" resultType="cn.uc.yiqibang.bean.Comment">
+       select * from t_comment
+    </select> -->
+    
+    
+   <!--  数据库有，不需要替代映射 -->
+   
+      <!-- <id="CommentMap" type="Comment" > -->
+      <id property="id" column="id" jdbcType="INTEGER"/>
+      <result property="cthumbsCount" column="c_thumbscount" jdbcType="INTEGER"/>
+      <result property="ccreateTime" column="c_createtime" jdbcType="TIMESTAMP"/>
+      <result property="tUId" column="t_u_id" jdbcType="INTEGER"/>
+      <result property="tNId" column="t_n_id" jdbcType="INTEGER"/>
+    </resultMap>  
+    
+    <resultMap id="ResultMapWithBLOBs" type="cn.uc.yiqibang.bean.Comment" extends="BaseResultMap" >
+    <result column="c_content" property="cContent" jdbcType="LONGVARCHAR" />
+  </resultMap>
+    
+    <sql id="Base_Column_List" >  
+    id, t_n_id,t_u_id,c_content,c_createtime,c_thumbscount
+  </sql>
+  
+  <sql id="Blob_Column_List" >   
+    c_content
+  </sql>
+    
+     <select id="selectByLike" resultMap="ResultMapWithBLOBs" parameterType="java.lang.String">
+       select 
+		<include refid="Base_Column_List" />
+		,
+        <include refid="Blob_Column_List" />
+      from t_comment
+      where c_content like #{likeStr}
+  </select>
+    
+    <select id="selectAll" resultMap="ResultMapWithBLOBs">
+      select 
+		<include refid="Base_Column_List" />
+		,
+        <include refid="Blob_Column_List" />
+      from t_comment
+  </select>
+	
+	<select id="selectById" resultMap="CommentMap">
+		select * from t_comment where id=#{id}
+	</select>
+    
+    <insert id="insert" parameterType="cn.uc.yiqibang.bean.Comment">
+		insert into t_comment(id,t_n_id,t_u_id,c_content,c_createtime,c_thumbscount)
+		values
+		(#{id,jdbcType=INTEGER},#{t_n_id,jdbcType=INTEGER},#{t_u_id,jdbcType=INTEGER},
+		#{c_content,jdbcType=LONGVARCHAR},#{c_createtime,jdbcType=TIMESTAMP},#{c_thumbscount,jdbcType=INTEGER})
+	</insert>
+	
+	<insert id="insertSelective" parameterType="cn.uc.yiqibang.bean.Comment" >
+   
+    insert into t_comment
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="tNId != null" >
+        t_n_id,
+      </if>
+      <if test="tUId != null" >
+        t_u_id,
+      </if>
+      <if test="cContent != null" >
+        c_content,
+      </if>
+      <if test="cCreatetime != null" >
+        c_createtime,
+      </if>
+      <if test="cThumbscount != null" >
+        c_thumbscount,
+      </if>
+      
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="tNId != null" >
+        #{tNId,jdbcType=INTEGER},
+      </if>
+      <if test="tUId != null" >
+        #{tUId,jdbcType=INTEGER},
+      </if>
+      <if test="cContent != null" >
+        #{cContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="cCreatetime != null" >
+        #{cCreatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="cThumbscount != null" >
+        #{cThumbscount,jdbcType=INTEGER},
+      </if>    
+    </trim>
+  </insert>
+	
+	
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    
+    delete from t_comment
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+</mapper>
